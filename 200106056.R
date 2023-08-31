@@ -1,0 +1,33 @@
+test_data <- read.csv("BT307_PostMidsem/lab6/spider_test.csv",fileEncoding="UTF-8-BOM")
+train_data <- read.csv("BT307_PostMidsem/lab6/spider_train.csv",)
+
+plot(train_data$size, train_data$spider, col='red', lwd=1.5, xlab='Size of Sand grain',ylab='Probability of finding spider',main='Logistic Regression Curve' )
+logit.size = glm(spider~size,data=train_data, family='binomial')
+summary(logit.size)
+
+sv = seq(0,1,0.01)
+size.data = data.frame(sv)
+names(size.data) = 'size'
+pv = predict(logit.size, size.data, type = 'response')
+lines(sv, pv, col='blue', lwd=2)
+
+p.test = predict(logit.size, test_data, type = 'response')
+c.test1 = ifelse(p.test>0.3,1,0)
+c.test2 = ifelse(p.test>0.5,1,0)
+c.test3 = ifelse(p.test>0.7,1,0)
+tab.test1 = table(Predicted=c.test1, Actual=test_data$spider)
+tab.test2 = table(Predicted=c.test2, Actual=test_data$spider)
+tab.test3 = table(Predicted=c.test3, Actual=test_data$spider)
+print(tab.test1)
+print(tab.test2)
+print(tab.test3)
+sn.test1 <- tab.test1[2,2]/sum(tab.test1[,2])
+sn.test2 <- tab.test2[2,2]/sum(tab.test2[,2])
+sn.test3 <- tab.test3[2,2]/sum(tab.test3[,2])
+print(sn.test1)
+print(sn.test2)
+print(sn.test3)
+
+x_axis=c(0.3,0.5,0.7)
+y_axis=c(sn.test1,sn.test2,sn.test3)
+barplot(y_axis,names.arg=x_axis,xlab = 'cutoff', ylab = 'Sensitivity',)
